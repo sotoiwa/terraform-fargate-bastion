@@ -2,10 +2,6 @@ output "security_group_bastion_id" {
   value = aws_security_group.this.id
 }
 
-output "instance_bastion_id" {
-  value = aws_instance.this.id
-}
-
 output "ecs_cluster_name" {
   value = aws_ecs_cluster.this.name
 }

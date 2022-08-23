@@ -90,16 +90,6 @@ docker tag bastion ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/bastion
 docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/bastion
 ```
 
-```sh
-cd ../../image
-docker build -t debug .
-AWS_ACCOUNT_ID=$(aws sts get-caller-identity --output text --query Account)
-AWS_REGION=$(aws configure get region)
-aws ecr get-login-password | docker login --username AWS --password-stdin https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-docker tag debug ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/debug
-docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/debug
-```
-
 ## Bastion タスクの実行
 
 タスクを実行する。

@@ -1,31 +1,3 @@
-resource "aws_iam_role" "instance" {
-  name = "${var.app_name}-instance-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = ""
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-      },
-    ]
-  })
-}
-
-resource "aws_iam_instance_profile" "instance" {
-  name = "${var.app_name}-instance-profile"
-  role = aws_iam_role.instance.name
-}
-
-resource "aws_iam_role_policy_attachment" "ssm_managed_instance_core" {
-  role       = aws_iam_role.instance.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
-
 # SSM サービスロール
 # https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/sysman-service-role.html
 resource "aws_iam_role" "ssm_service" {
@@ -53,10 +25,56 @@ resource "aws_iam_role" "ssm_service" {
     ]
   })
 }
+resource "aws_iam_policy" "ssm_service" {
+  name   = "${var.app_name}-session-manager-logging-policy"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssmmessages:CreateControlChannel",
+        "ssmmessages:CreateDataChannel",
+        "ssmmessages:OpenControlChannel",
+        "ssmmessages:OpenDataChannel",
+        "ssm:UpdateInstanceInformation"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::${var.session_manager_logging_bucket_name}/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetEncryptionConfiguration"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+
+}
 
 resource "aws_iam_role_policy_attachment" "ssm_service" {
   role       = aws_iam_role.ssm_service.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  policy_arn = aws_iam_policy.ssm_service.arn
 }
 
 # タスク実行ロール
@@ -123,16 +141,6 @@ resource "aws_iam_policy" "ecs_task" {
         "ssm:RemoveTagsFromResource",
         "ssm:AddTagsToResource",
         "ssm:CreateActivation"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ssmmessages:CreateControlChannel",
-        "ssmmessages:CreateDataChannel",
-        "ssmmessages:OpenControlChannel",
-        "ssmmessages:OpenDataChannel"
       ],
       "Resource": "*"
     }

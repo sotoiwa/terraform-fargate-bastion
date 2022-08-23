@@ -6,10 +6,6 @@ output "private_subnet_c_id" {
   value = module.network.private_subnet_c_id
 }
 
-output "instance_bastion_id" {
-  value = module.bastion.instance_bastion_id
-}
-
 output "security_group_bastion_id" {
   value = module.bastion.security_group_bastion_id
 }
