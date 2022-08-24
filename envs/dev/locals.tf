@@ -1,5 +1,5 @@
 locals {
   managed_by = "terraform"
-  repo       = "fargate-bastion"
+  repo       = "terraform-fargate-bastion"
   env        = "dev"
 }
