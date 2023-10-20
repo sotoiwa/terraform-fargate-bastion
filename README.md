@@ -70,8 +70,6 @@ security_group_bastion_id = "sg-0992f3e6078155f45"
 - https://github.com/uma-arai/sbcntr-resources
 - [Fargateタスクのコンテナ内でシェルを起動する](https://sotoiwa.hatenablog.com/entry/2020/04/27/193815)
 
-run.sh で SSM サービスロールをしており、上記の出力と合わせること。
-
 ECR リポジトリの作成は Terraform の外でやる。
 
 ```sh
